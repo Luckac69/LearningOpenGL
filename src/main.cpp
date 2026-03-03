@@ -18,8 +18,10 @@ std::string readFile(const std::string& path) {
 }
 
 // Usage
-//std::string vertexSource = readFile("shaders/vertex.glsl");
-//std::string fragmentSource = readFile("shaders/fragment.glsl");
+std::string vertexCode = readFile("shaders/vertex.glsl");
+std::string fragmentCode = readFile("shaders/fragment.glsl");
+const char* vertexShaderSource = vertexCode.c_str();
+const char* fragmentShaderSource = fragmentCode.c_str();
 
 // Tutorial Code
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -29,6 +31,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // Vertex shader
+/*
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
@@ -43,6 +46,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
 	"{\n"
 	"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 	"}\n";
+	*/
 
 int main() {
 
@@ -213,34 +217,3 @@ void processInput(GLFWwindow *window)
 
 
 
-/*
-// CHAT GPT Test Code
-int main() {
-    if (!glfwInit())
-        return -1;
-
-
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
-    if (!window) {
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-
-    // initialize GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-	    std::cerr << "Failed to initialize GLAD\n";
-	    return -1;
-    }
-
-    while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    glfwTerminate();
-    return 0;
-}
-*/
