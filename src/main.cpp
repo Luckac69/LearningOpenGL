@@ -185,6 +185,8 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	
+	//wireframe
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 
 	
