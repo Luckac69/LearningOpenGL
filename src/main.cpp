@@ -131,15 +131,33 @@ int main() {
 
 	// vertex data!
 	float vertices[] = {
-		0.5f,  0.5f, 0.0f,  // top right
+
+
+		-0.5f, 0.5f, 0.0f,
+		-1.0f, -0.5f, 0.0f,
+		0.0f, -0.5f, 0.0f,
+
+		0.0f, 0.5f, 0.0f,
+		1.0f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f
+
+
+
+
+		/*0.5f,  0.5f, 0.0f,  // top right
 		0.5f, -0.5f, 0.0f,  // bottom right
 		-0.5f, -0.5f, 0.0f,  // bottom left
 		-0.5f,  0.5f, 0.0f   // top left 
+				     */
 	};  
 	// multible triangles sharing vertices
 	unsigned int indices[] = {
+		0, 1, 2,
+		3, 4, 5
+		/*
 		0, 1, 3, // first trianle
 		1, 2, 3
+		*/
 	};
 
 	unsigned int EBO;
@@ -185,8 +203,8 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	
-	//wireframe
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//////    uncomment for wireframe
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 
 	
