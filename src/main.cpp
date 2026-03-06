@@ -7,6 +7,8 @@
 #include <sstream>
 #include <string>
 
+#include <cmath>
+
 std::string readFile(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
@@ -21,9 +23,11 @@ std::string readFile(const std::string& path) {
 std::string vertexCode = readFile("shaders/vertex.glsl");
 std::string fragmentCodeOrange = readFile("shaders/fragmentOrange.glsl");
 std::string fragmentCodeYellow = readFile("shaders/fragmentYellow.glsl");
+std::string fragmentCode = readFile("shaders/fragment.glsl");
 const char* vertexShaderSource = vertexCode.c_str();
 const char* fragmentShaderSourceOrange= fragmentCodeOrange.c_str();
 const char* fragmentShaderSourceYellow = fragmentCodeYellow.c_str();
+const char* fragmentShaderSource = fragmentCode.c_str();
 
 // Tutorial Code
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -64,24 +68,31 @@ int main() {
 	// VERTEX
 	// createing shader object (ref by ID again)
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// compile the shader
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); // got paramter 3 from top
 	glCompileShader(vertexShader);
 
 	// Fragment shader
 	unsigned int fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER); 
 	unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
-	unsigned int shaderProgramOrange = glCreateProgram();
+	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	//unsigned int shaderProgramOrange = glCreateProgram();
 	unsigned int shaderProgramYellow = glCreateProgram();
-	glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSourceOrange, NULL);
-	glCompileShader(fragmentShaderOrange);
+	unsigned int shaderProgram = glCreateProgram();
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+	//glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSourceOrange, NULL);
+	//glCompileShader(fragmentShaderOrange);
 	glShaderSource(fragmentShaderYellow, 1, &fragmentShaderSourceYellow, NULL);
 	glCompileShader(fragmentShaderYellow);
 
+
 	// create shader program
-	glAttachShader(shaderProgramOrange, vertexShader);
-	glAttachShader(shaderProgramOrange, fragmentShaderOrange);
-	glLinkProgram(shaderProgramOrange);
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+//	glAttachShader(shaderProgramOrange, vertexShader);
+//	glAttachShader(shaderProgramOrange, fragmentShaderOrange);
+//	glLinkProgram(shaderProgramOrange);
 	glAttachShader(shaderProgramYellow, vertexShader);
 	glAttachShader(shaderProgramYellow, fragmentShaderYellow);
 	glLinkProgram(shaderProgramYellow);
@@ -90,6 +101,15 @@ int main() {
 //	glDeleteShader(fragmentShaderOrange);
 //	glDeleteShader(fragmentShaderYellow);
 
+	int success;
+	char infoLog[512];
+	// check for shader compile errors
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
 	// vertex data!
 	float firstTriangle[] = {
 
@@ -155,10 +175,20 @@ int main() {
 
 		processInput(window);
 
+		// render
+		// clear color buffer
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgramOrange);
+		//activate shader
+		glUseProgram(shaderProgram);
+
+		// update uniform color
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
 		glBindVertexArray(VAOs[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -173,8 +203,9 @@ int main() {
 	// delete stuff when done
 	glDeleteVertexArrays(1, VAOs);
 	glDeleteBuffers(1, VBOs);
-	glDeleteProgram(shaderProgramOrange);
+	//glDeleteProgram(shaderProgramOrange);
 	glDeleteProgram(shaderProgramYellow);
+	glDeleteProgram(shaderProgram);
 	glfwTerminate();
 
 	return 0;
