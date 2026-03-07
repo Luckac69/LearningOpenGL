@@ -1,12 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <iostream>
+#include "Shader.h"
 
+#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
-
 #include <cmath>
 
 std::string readFile(const std::string& path) {
@@ -20,6 +19,7 @@ std::string readFile(const std::string& path) {
 }
 
 // Usage
+/*
 std::string vertexCode = readFile("shaders/vertex.glsl");
 std::string fragmentCodeOrange = readFile("shaders/fragmentOrange.glsl");
 std::string fragmentCodeYellow = readFile("shaders/fragmentYellow.glsl");
@@ -28,6 +28,7 @@ const char* vertexShaderSource = vertexCode.c_str();
 const char* fragmentShaderSourceOrange= fragmentCodeOrange.c_str();
 const char* fragmentShaderSourceYellow = fragmentCodeYellow.c_str();
 const char* fragmentShaderSource = fragmentCode.c_str();
+*/
 
 // Tutorial Code
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -64,7 +65,11 @@ int main() {
 	}
 
 
+	// Shader
+	Shader colorShader("shaders/shader.vs", "shaders/shader.fs");
+	Shader yellowShader("shaders/vertex.glsl", "shaders/fragmentYellow.glsl");
 
+	/*
 	// VERTEX
 	// createing shader object (ref by ID again)
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -111,6 +116,7 @@ int main() {
 		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 	// vertex data!
+	*/
 	float firstTriangle[] = {
 
 
@@ -128,8 +134,6 @@ int main() {
 
 //	unsigned int EBO;
 //	glGenBuffers(1, &EBO);
-
-
 	unsigned int VAOs[2], VBOs[2];
 	glGenBuffers(2, VBOs);
 	glGenVertexArrays(2, VAOs);
@@ -157,12 +161,10 @@ int main() {
 //	glEnableVertexAttribArray(0);  
 
 
-	//[...]
-	//// TROLLLED AGAIN
 
 	//unbind stuff
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindVertexArray(0);
 	
 	//////    uncomment for wireframe
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -183,18 +185,22 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//activate shader
-		glUseProgram(shaderProgram);
+		//glUseProgram(shaderProgram);
 
 		// update uniform color
+		/*
 		float timeValue = glfwGetTime();
 		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		*/
 
+		colorShader.use();
 		glBindVertexArray(VAOs[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glUseProgram(shaderProgramYellow);
+		//glUseProgram(shaderProgramYellow);
+		yellowShader.use();
 		glBindVertexArray(VAOs[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -206,8 +212,8 @@ int main() {
 	glDeleteVertexArrays(1, VAOs);
 	glDeleteBuffers(1, VBOs);
 	//glDeleteProgram(shaderProgramOrange);
-	glDeleteProgram(shaderProgramYellow);
-	glDeleteProgram(shaderProgram);
+	//glDeleteProgram(shaderProgramYellow);
+	//glDeleteProgram(shaderProgram);
 	glfwTerminate();
 
 	return 0;
