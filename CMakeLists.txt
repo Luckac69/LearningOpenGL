@@ -18,6 +18,6 @@ add_library(glad src/glad.c)
 target_include_directories(glad PUBLIC include)
 
 # Executible
-add_executable(myapp src/main.cpp)
+add_executable(myapp src/main.cpp src/Shader.cpp)
 
 target_link_libraries(myapp PRIVATE glad OpenGL::GL glfw)
