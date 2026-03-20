@@ -66,7 +66,7 @@ int main() {
 
 
 	// Shader
-	Shader colorShader("shaders/shader.vs", "shaders/shader.fs");
+	Shader colorShader("shaders/shader.vs.glsl", "shaders/shader.fs.glsl");
 	Shader yellowShader("shaders/vertex.glsl", "shaders/fragmentYellow.glsl");
 
 	/*
@@ -78,11 +78,7 @@ int main() {
 
 	// Fragment shader
 	unsigned int fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER); 
-	unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	//unsigned int shaderProgramOrange = glCreateProgram();
-	unsigned int shaderProgramYellow = glCreateProgram();
-	unsigned int shaderProgram = glCreateProgram();
+	unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER); unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); //unsigned int shaderProgramOrange = glCreateProgram(); unsigned int shaderProgramYellow = glCreateProgram(); unsigned int shaderProgram = glCreateProgram();
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 	//glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSourceOrange, NULL);
@@ -117,12 +113,14 @@ int main() {
 	}
 	// vertex data!
 	*/
+	float x = 0.0;
+	float y = -0.5;
 	float firstTriangle[] = {
 
 
-		-0.45f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-		-0.9f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-		0.0f, -0.5f, 0.0f,   0.0f, 0.0f, 1.1f
+		-0.0f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+		0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f
 	};
 	float secondTriangle[] = {
 		0.0f, 0.5f, 0.0f,
@@ -194,8 +192,13 @@ int main() {
 		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 		*/
+		float timeValue = glfwGetTime();
+		float x = sin(timeValue);
+		float y = sin(timeValue + 3.14159/2);
 
 		colorShader.use();
+		glUniform2f(glGetUniformLocation(colorShader.ID, "offset"), x, y);
+
 		glBindVertexArray(VAOs[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
