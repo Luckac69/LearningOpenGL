@@ -192,7 +192,7 @@ int main() {
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 	// wraping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	// between texals
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -225,18 +225,11 @@ int main() {
 	// window loop
 	while (!glfwWindowShouldClose(window)){
 
-
-
 		processInput(window);
-
 		// render
 		// clear color buffer
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		//activate shader
-		//glUseProgram(shaderProgram);
-
 		// bind texture
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture0);
@@ -249,6 +242,7 @@ int main() {
 		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 		*/
+		// turning around n stuff
 		float timeValue = glfwGetTime();
 		float x = sin(timeValue);
 		float y = sin(timeValue + 3.14159/2);
@@ -261,10 +255,6 @@ int main() {
 		glBindVertexArray(VAOs[0]);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glUseProgram(shaderProgramYellow);
-//		yellowShader.use();
-//		glBindVertexArray(VAOs[1]);
-//		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
