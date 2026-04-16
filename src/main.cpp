@@ -117,9 +117,9 @@ int main() {
 	float verticies[] = {
 		// positions          // colors           // texture coords
 		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		 0.5f, -0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+		-0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 1.0f,   0.0f, 1.0f    // top left
 	};
 	unsigned int indicies[] = {
 		0, 1, 3, // first triangle
@@ -161,10 +161,11 @@ int main() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	// texture stuff
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	// texture stuff //////////?########################
+	stbi_set_flip_vertically_on_load(true);  // flips images
+	unsigned int texture0;
+	glGenTextures(1, &texture0);
+	glBindTexture(GL_TEXTURE_2D, texture0);
 	// wraping
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -183,11 +184,43 @@ int main() {
 	} else {
 		std::cerr << "Faild to load texture" << std::endl;
 	}
-	// free image
+	// free image data variable thingy
+	stbi_image_free(data);
+
+	// texture 2 //////////////////////////////////
+	unsigned int texture1;
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+	// wraping
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	// between texals
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// mipmaps
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	data = stbi_load("textures/awesomeface.png", &textureWidth, &textureHeight, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); // GL_RGBA instead of GL_RGB for alpha
+		glGenerateMipmap(GL_TEXTURE_2D);
+	} else {
+		std::cerr << "Faild to load texture" << std::endl;
+	}
+
+
+	// free image data variable thingy
 	stbi_image_free(data);
 	//glBindTexture(GL_TEXTURE_2D, texture);
 	//glBindVertexArray(VAOs[0]);
 	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
+	// tell open gl to add pictures to uniform
+	ourShader.use();
+	ourShader.setInt("texture0", 0);
+	ourShader.setInt("texture1", 1);
 
 	// window loop
 	while (!glfwWindowShouldClose(window)){
@@ -205,7 +238,10 @@ int main() {
 		//glUseProgram(shaderProgram);
 
 		// bind texture
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture1);
 		// update uniform color
 		/*
 		float timeValue = glfwGetTime();
