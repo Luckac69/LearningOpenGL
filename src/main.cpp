@@ -26,17 +26,6 @@ std::string readFile(const std::string& path) {
     return ss.str();
 }
 
-// Usage
-/*
-std::string vertexCode = readFile("shaders/vertex.glsl");
-std::string fragmentCodeOrange = readFile("shaders/fragmentOrange.glsl");
-std::string fragmentCodeYellow = readFile("shaders/fragmentYellow.glsl");
-std::string fragmentCode = readFile("shaders/fragment.glsl");
-const char* vertexShaderSource = vertexCode.c_str();
-const char* fragmentShaderSourceOrange= fragmentCodeOrange.c_str();
-const char* fragmentShaderSourceYellow = fragmentCodeYellow.c_str();
-const char* fragmentShaderSource = fragmentCode.c_str();
-*/
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -46,6 +35,7 @@ const unsigned int SCR_HEIGHT = 900;
 
 int main() {
 
+	// init glfw
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -72,8 +62,6 @@ int main() {
 	Shader ourShader("shaders/shader.vs.glsl", "shaders/shader.fs.glsl");
 	Shader yellowShader("shaders/vertex.glsl", "shaders/fragmentYellow.glsl");
 
-	float x = 0.0;
-	float y = -0.5;
 	float verticies[] = {
 		// positions          // colors           // texture coords
 		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
@@ -190,21 +178,6 @@ int main() {
 	// window loop
 	while (!glfwWindowShouldClose(window)){
 
-	// MATRIX EXPIREMENTS
-	glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-	glm::mat4 trans = glm::mat4(1.0f);
-	/*
-	trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-	vec = trans * vec;
-	std::cout << vec.x << "\t" << vec.y << "\t" << vec.z << std::endl;
-	*/
-//	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-//	trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-	trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-	trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-	// send matrix to shader
-	unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 		processInput(window);
 		// render
@@ -216,22 +189,30 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture1);
-		// update uniform color
-		/*
-		float timeValue = glfwGetTime();
-		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-		*/
-		// turning around n stuff
-		float timeValue = glfwGetTime();
-		float x = sin(timeValue);
-		float y = sin(timeValue + 3.14159/2);
-		x = 0;
-		y = 0;
+
+		// MATRIX EXPIREMENTS
+		glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+		glm::mat4 trans = glm::mat4(1.0f);
+		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		// send matrix to shader
+		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+		// draw first box
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		// second box
+		trans = glm::mat4(1.0f);
+		trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+		float scaleAmount = static_cast<float>(sin(glfwGetTime()));
+		trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+		// draw second box
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		ourShader.use();
-		glUniform2f(glGetUniformLocation(ourShader.ID, "offset"), x, y);
+		glUniform2f(glGetUniformLocation(ourShader.ID, "offset"), 0, 0);
 
 		glBindVertexArray(VAOs[0]);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
